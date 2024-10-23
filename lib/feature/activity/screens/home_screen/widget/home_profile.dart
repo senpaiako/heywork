@@ -11,10 +11,9 @@ class homeProfile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        const Image(
-          image: AssetImage(TImages.vadeLogoBlack),
-          height: 50,
-          width: 50,
+        CircleAvatar(
+          backgroundImage: AssetImage(TImages.vadeLogoBlack),
+          maxRadius: 25,
         ),
         SizedBox(
           width: TSizes.spaceBtwItems,
