@@ -11,29 +11,20 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dark = THelperFunctions.isDarkMode(context);
+
     return Scaffold(
+      backgroundColor: dark ? TColors.darkBackground : TColors.lightBackground,
       body: SingleChildScrollView(
         child: Padding(
           padding: TSpacingStyle.paddingWithAppBarHeight,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ///Login Header
-              logInHeader(),
-              //Login FORM
-              logInForm(),
-              //Divider
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Divider(
-                    color: dark ? TColors.darkGrey : TColors.grey,
-                    thickness: 0.5,
-                    indent: 60,
-                    endIndent: 5,
-                  )
-                ],
-              )
+              /// Login Header
+              LoginHeader(dark, context),
+
+              /// Login Form
+              logInForm(context, dark)
             ],
           ),
         ),

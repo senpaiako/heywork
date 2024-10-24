@@ -36,12 +36,12 @@ class TTextTheme {
       color: Colors.black,
     ),
     bodyLarge: TextStyle(
-      fontSize: 16.0,
+      fontSize: 20.0,
       fontWeight: FontWeight.w500,
       color: Colors.black,
     ),
     bodyMedium: TextStyle(
-      fontSize: 14.0,
+      fontSize: 16.0,
       fontWeight: FontWeight.w500,
       color: Colors.black,
     ),
@@ -95,12 +95,12 @@ class TTextTheme {
       color: Colors.white,
     ),
     bodyLarge: TextStyle(
-      fontSize: 16.0,
+      fontSize: 20.0,
       fontWeight: FontWeight.w500,
       color: Colors.white,
     ),
     bodyMedium: TextStyle(
-      fontSize: 14.0,
+      fontSize: 16.0,
       fontWeight: FontWeight.w500,
       color: Colors.white,
     ),

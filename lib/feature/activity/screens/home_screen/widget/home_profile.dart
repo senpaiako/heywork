@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:payroll_vade/utils/constants/image.strings.dart';
 import 'package:payroll_vade/utils/constants/sizes.dart';
 
-class homeProfile extends StatelessWidget {
-  const homeProfile({
+class HomeProfile extends StatelessWidget {
+  const HomeProfile({
     super.key,
   });
 

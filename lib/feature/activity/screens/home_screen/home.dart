@@ -1,12 +1,15 @@
 import 'dart:async'; // Import the async package
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
 import 'package:payroll_vade/common/styles/spacing_styles.dart';
+import 'package:payroll_vade/feature/activity/screens/home_screen/widget/container.dart';
 import 'package:payroll_vade/feature/activity/screens/home_screen/widget/home_profile.dart';
 import 'package:payroll_vade/utils/constants/colors.dart';
 import 'package:payroll_vade/utils/constants/sizes.dart';
 import 'package:payroll_vade/utils/device/device_utility.dart';
 import 'package:payroll_vade/utils/constants/enums.dart';
+import 'package:payroll_vade/utils/helpers/helper_functions.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -59,23 +62,34 @@ class _HomeScreenState extends State<HomeScreen> {
     return DateFormat('HH:mm').format(time); // Format time using intl
   }
 
+  String _formatDate(DateTime date) {
+    return DateFormat('MMMM d, y')
+        .format(date); // Format date to "Month Day, Year"
+  }
+
   @override
   Widget build(BuildContext context) {
     // Adjusting the index to match the DayOfWeek enum
     DayOfWeek currentDay =
         DayOfWeek.values[(_currentTime.toLocal().weekday - 1) % 7];
 
+    // Check if dark mode is enabled
+    final dark = THelperFunctions.isDarkMode(context);
+
     return Stack(
       children: [
+        //Background
+        Container(
+          color: dark ? TColors.darkBackground : TColors.lightBackground,
+          width: TDeviceUtils.getScreenWidth(context),
+          height: TDeviceUtils.getScreenHeight(),
+        ),
+        //body
         Container(
           width: TDeviceUtils.getScreenWidth(context),
           height: 170,
-          decoration: BoxDecoration(
-            color: TColors.primary,
-            border: Border.all(
-              color: TColors.borderPrimary, // Use your defined border color
-              width: 1.0, // Adjust the width as needed
-            ),
+          child: CustomPaint(
+            painter: WavyBottomPainter(dark ? TColors.accent : TColors.primary),
           ),
         ),
         Padding(
@@ -84,18 +98,22 @@ class _HomeScreenState extends State<HomeScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Profile Section
-              const homeProfile(),
+              const HomeProfile(),
               const SizedBox(height: TSizes.spaceBtwItems),
               // Rounded Container
               Container(
                 width: TDeviceUtils.getScreenWidth(context),
                 decoration: BoxDecoration(
-                  color: TColors.primaryBackground,
+                  color: dark
+                      ? TColors.darkContainer
+                      : TColors
+                          .lightContainer, // Container color based on theme
                   borderRadius: BorderRadius.circular(20.0),
                   border: Border.all(
-                    color:
-                        TColors.borderPrimary, // Use your defined border color
-                    width: 1.0, // Adjust the width as needed
+                    color: dark
+                        ? TColors.borderDark
+                        : TColors.borderLight, // Border color based on theme
+                    width: 1.0,
                   ),
                 ),
                 child: Column(
@@ -110,47 +128,59 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       padding: const EdgeInsets.all(10.0),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
+                          Icon(
+                              color: TColors.primary,
+                              size: 50,
+                              Iconsax.calendar),
+                          const SizedBox(
+                            width: TSizes.spaceBtwItems,
+                          ),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                _currentTime.toLocal().toString().split(' ')[0],
-                                style:
-                                    Theme.of(context).textTheme.headlineSmall,
+                              Row(
+                                children: [
+                                  Text(
+                                    _formatDate(_currentTime
+                                        .toLocal()), // Use formatted date
+                                    style:
+                                        Theme.of(context).textTheme.bodyMedium,
+                                  ),
+                                  const SizedBox(width: 5),
+                                  Text(
+                                    currentDay
+                                        .name, // Use the name getter to get the day name
+                                    style:
+                                        Theme.of(context).textTheme.titleMedium,
+                                  ),
+                                ],
                               ),
                               const SizedBox(height: 4.0),
                               Text(
-                                currentDay
-                                    .name, // Use the name getter to get the day name
-                                style: Theme.of(context).textTheme.titleMedium,
+                                '${_currentTime.toLocal().hour.toString().padLeft(2, '0')}:${_currentTime.toLocal().minute.toString().padLeft(2, '0')}:${_currentTime.toLocal().second.toString().padLeft(2, '0')}',
+                                style:
+                                    Theme.of(context).textTheme.headlineLarge,
                               ),
                             ],
-                          ),
-                          const SizedBox(width: TSizes.spaceBtwItems),
-                          Container(
-                            width: 1.0,
-                            height: 50.0,
-                            color: Colors.black,
-                          ),
-                          const SizedBox(width: TSizes.spaceBtwItems),
-                          Text(
-                            '${_currentTime.toLocal().hour.toString().padLeft(2, '0')}:${_currentTime.toLocal().minute.toString().padLeft(2, '0')}:${_currentTime.toLocal().second.toString().padLeft(2, '0')}',
-                            style: Theme.of(context).textTheme.displaySmall,
                           ),
                         ],
                       ),
                     ),
                     Container(
                       padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
-                      height: 100,
+                      height: 80,
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: dark
+                            ? TColors.darkContainer
+                            : Colors.white, // Background color based on theme
                         border: Border.all(
-                          color: TColors
-                              .borderSecondary, // Use your defined border color
-                          width: 1.0, // Adjust the width as needed
+                          color: dark
+                              ? TColors.borderDark
+                              : TColors
+                                  .borderLight, // Border color based on theme
+                          width: 1.0,
                         ),
                       ),
                       child: Row(
@@ -164,7 +194,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                       Theme.of(context).textTheme.headlineSmall,
                                 ),
                                 // Display clock in time if available
-                                Text(_formatTime(_clockInTime)),
+                                Text(
+                                  _formatTime(_clockInTime),
+                                  style: Theme.of(context).textTheme.bodyLarge,
+                                ),
                               ],
                             ),
                             Column(
@@ -175,7 +208,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                       Theme.of(context).textTheme.headlineSmall,
                                 ),
                                 // Display clock out time if available
-                                Text(_formatTime(_clockOutTime)),
+                                Text(
+                                  _formatTime(_clockOutTime),
+                                  style: Theme.of(context).textTheme.bodyLarge,
+                                ),
                               ],
                             ),
                           ]),
@@ -184,13 +220,43 @@ class _HomeScreenState extends State<HomeScreen> {
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: _toggleClockInOut,
-                        // Toggle button text between 'Clock In' and 'Clock Out'
+                        style: ElevatedButton.styleFrom(
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(0.0), // Sharp corner
+                              topRight: Radius.circular(0.0), // Sharp corner
+                              bottomLeft:
+                                  Radius.circular(20.0), // Rounded corner
+                              bottomRight:
+                                  Radius.circular(20.0), // Rounded corner
+                            ),
+                          ),
+                        ),
                         child: Text(_isClockedIn ? 'Clock Out' : 'Clock In'),
                       ),
                     ),
                   ],
                 ),
               ),
+              const SizedBox(
+                height: TSizes.spaceBtwSections,
+              ),
+              Column(
+                children: [
+                  Row(
+                    children: [
+                      Icon(color: TColors.primary, Iconsax.notification),
+                      SizedBox(
+                        width: TSizes.spaceBtwItems,
+                      ),
+                      Text(
+                        'Announcement',
+                        style: Theme.of(context).textTheme.headlineMedium,
+                      )
+                    ],
+                  )
+                ],
+              )
             ],
           ),
         ),
