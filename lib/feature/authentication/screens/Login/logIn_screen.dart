@@ -26,7 +26,8 @@ class _LoginScreenState extends State<LoginScreen> {
   TextEditingController passwordController = TextEditingController();
   final LoginApi loginApi = LoginApi();
   String? errorMessage;
-  bool loading = true;
+  bool loading = false; // Changed to false initially
+  bool isPasswordVisible = false;
 
   @override
   void initState() {
@@ -41,38 +42,40 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (mobileNo != null && password != null) {
       login(mobileNo, password);
-    } else {
-      setState(() {
-        loading = false; // Update loading state
-      });
     }
   }
 
   Future<void> login(String mobileNo, String password) async {
+    setState(() {
+      loading = true; // Show loading indicator
+    });
+
     final LoginRequest loginRequest = LoginRequest(
       mobileNo: mobileNo,
       password: password,
     );
 
     final dynamic response = await loginApi.login(loginRequest: loginRequest);
+    setState(() {
+      loading = false; // Hide loading indicator
+    });
+
     if (response != null) {
       final AccountDto accountDTO = response;
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('mobileNo', mobileNo);
       await prefs.setString('password', password);
 
-      if (accountDTO != null) {
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(
-            builder: (context) => NavigationMenu(
-              loginRequest: loginRequest,
-              accountDTO: accountDTO,
-            ),
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (context) => NavigationMenu(
+            loginRequest: loginRequest,
+            accountDTO: accountDTO,
           ),
-          (route) => false,
-        );
-      }
+        ),
+        (route) => false,
+      );
     } else {
       setState(() {
         errorMessage = 'Incorrect email or password.';
@@ -92,10 +95,9 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              /// Login Header
               LoginHeader(dark, context),
 
-              /// Error Message
+              // Error Message
               if (errorMessage != null)
                 Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -105,7 +107,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
 
-              /// Login Form
+              // Loading Indicator
+              if (loading) Center(child: CircularProgressIndicator()),
+
+              // Login Form
               Form(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
@@ -125,23 +130,52 @@ class _LoginScreenState extends State<LoginScreen> {
                                 prefixIcon: const Icon(Iconsax.login),
                                 labelText: TTexts.phoneNo,
                               ),
+                        validator: (value) => value?.isEmpty ?? true
+                            ? 'Please enter your phone number'
+                            : null,
                       ),
                       const SizedBox(height: TSizes.sm),
                       TextFormField(
                         controller: passwordController,
+                        obscureText: !isPasswordVisible,
                         decoration: dark
                             ? TTextFormFieldTheme.darkInputDecorationTheme
                                 .copyWith(
                                 prefixIcon: const Icon(Iconsax.password_check),
                                 labelText: TTexts.password,
-                                suffixIcon: const Icon(Iconsax.eye_slash),
+                                suffixIcon: IconButton(
+                                  icon: Icon(
+                                    isPasswordVisible
+                                        ? Iconsax.eye
+                                        : Iconsax.eye_slash,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      isPasswordVisible = !isPasswordVisible;
+                                    });
+                                  },
+                                ),
                               )
                             : TTextFormFieldTheme.lightInputDecorationTheme
                                 .copyWith(
                                 prefixIcon: const Icon(Iconsax.password_check),
                                 labelText: TTexts.password,
-                                suffixIcon: const Icon(Iconsax.eye_slash),
+                                suffixIcon: IconButton(
+                                  icon: Icon(
+                                    isPasswordVisible
+                                        ? Iconsax.eye
+                                        : Iconsax.eye_slash,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      isPasswordVisible = !isPasswordVisible;
+                                    });
+                                  },
+                                ),
                               ),
+                        validator: (value) => value?.isEmpty ?? true
+                            ? 'Please enter your password'
+                            : null,
                       ),
                       const SizedBox(height: TSizes.sm),
                       Row(
@@ -162,7 +196,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           onPressed: () {
                             String mobileNo = mobileNoController.text.trim();
                             String password = passwordController.text.trim();
-                            login(mobileNo, password); // Call login method
+                            login(mobileNo, password);
                           },
                           child: const Text(TTexts.signIn),
                         ),

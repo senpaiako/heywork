@@ -1,9 +1,9 @@
 import 'dart:async'; // Import the async package
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart'; // Import Geolocator
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
 import 'package:payroll_vade/common/styles/spacing_styles.dart';
+import 'package:payroll_vade/feature/activity/screens/home_screen/widget/background.dart';
 import 'package:payroll_vade/feature/activity/screens/home_screen/widget/container.dart';
 import 'package:payroll_vade/feature/activity/screens/home_screen/widget/home_profile.dart';
 import 'package:payroll_vade/utils/constants/colors.dart';
@@ -31,7 +31,6 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isClockedIn = false; // Track clock in/out state
   DateTime? _clockInTime; // Variable to hold the clock in time
   DateTime? _clockOutTime; // Variable to hold the clock out time
-  Position? _currentPosition; // Variable to hold current position
 
   @override
   void initState() {
@@ -43,8 +42,6 @@ class _HomeScreenState extends State<HomeScreen> {
         _currentTime = DateTime.now(); // Update the current time every second
       });
     });
-
-    _getCurrentLocation(); // Get the current location
   }
 
   @override
@@ -78,25 +75,6 @@ class _HomeScreenState extends State<HomeScreen> {
         .format(date); // Format date to "Month Day, Year"
   }
 
-  Future<void> _getCurrentLocation() async {
-    // Check if location services are enabled
-    LocationPermission permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      // Handle the case when location permissions are denied forever
-      return;
-    }
-
-    // Get the current position
-    _currentPosition = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-    print(
-        "Latitude: ${_currentPosition!.latitude}, Longitude: ${_currentPosition!.longitude}");
-  }
-
   @override
   Widget build(BuildContext context) {
     // Adjusting the index to match the DayOfWeek enum
@@ -108,13 +86,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Stack(
       children: [
-        // Background
-        Container(
-          color: dark ? TColors.darkBackground : TColors.lightBackground,
-          width: TDeviceUtils.getScreenWidth(context),
-          height: TDeviceUtils.getScreenHeight(),
-        ),
-        // Body
+        //Background
+        appBackground(dark: dark),
+        //body
         Container(
           width: TDeviceUtils.getScreenWidth(context),
           height: 170,
@@ -134,10 +108,15 @@ class _HomeScreenState extends State<HomeScreen> {
               Container(
                 width: TDeviceUtils.getScreenWidth(context),
                 decoration: BoxDecoration(
-                  color: dark ? TColors.darkContainer : TColors.lightContainer,
+                  color: dark
+                      ? TColors.darkContainer
+                      : TColors
+                          .lightContainer, // Container color based on theme
                   borderRadius: BorderRadius.circular(20.0),
                   border: Border.all(
-                    color: dark ? TColors.borderDark : TColors.borderLight,
+                    color: dark
+                        ? TColors.borderDark
+                        : TColors.borderLight, // Border color based on theme
                     width: 1.0,
                   ),
                 ),
@@ -159,20 +138,24 @@ class _HomeScreenState extends State<HomeScreen> {
                               color: TColors.primary,
                               size: 50,
                               Iconsax.calendar),
-                          const SizedBox(width: TSizes.spaceBtwItems),
+                          const SizedBox(
+                            width: TSizes.spaceBtwItems,
+                          ),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(
                                 children: [
                                   Text(
-                                    _formatDate(_currentTime.toLocal()),
+                                    _formatDate(_currentTime
+                                        .toLocal()), // Use formatted date
                                     style:
                                         Theme.of(context).textTheme.bodyMedium,
                                   ),
                                   const SizedBox(width: 5),
                                   Text(
-                                    currentDay.name,
+                                    currentDay
+                                        .name, // Use the name getter to get the day name
                                     style:
                                         Theme.of(context).textTheme.titleMedium,
                                   ),
@@ -193,10 +176,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
                       height: 80,
                       decoration: BoxDecoration(
-                        color: dark ? TColors.darkContainer : Colors.white,
+                        color: dark
+                            ? TColors.darkContainer
+                            : Colors.white, // Background color based on theme
                         border: Border.all(
-                          color:
-                              dark ? TColors.borderDark : TColors.borderLight,
+                          color: dark
+                              ? TColors.borderDark
+                              : TColors
+                                  .borderLight, // Border color based on theme
                           width: 1.0,
                         ),
                       ),
@@ -210,6 +197,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   style:
                                       Theme.of(context).textTheme.headlineSmall,
                                 ),
+                                // Display clock in time if available
                                 Text(
                                   _formatTime(_clockInTime),
                                   style: Theme.of(context).textTheme.bodyLarge,
@@ -223,6 +211,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   style:
                                       Theme.of(context).textTheme.headlineSmall,
                                 ),
+                                // Display clock out time if available
                                 Text(
                                   _formatTime(_clockOutTime),
                                   style: Theme.of(context).textTheme.bodyLarge,
@@ -253,17 +242,21 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: TSizes.spaceBtwSections),
+              const SizedBox(
+                height: TSizes.spaceBtwSections,
+              ),
               Column(
                 children: [
                   Row(
                     children: [
                       Icon(color: TColors.primary, Iconsax.notification),
-                      SizedBox(width: TSizes.spaceBtwItems),
+                      SizedBox(
+                        width: TSizes.spaceBtwItems,
+                      ),
                       Text(
                         'Announcement',
                         style: Theme.of(context).textTheme.headlineMedium,
-                      ),
+                      )
                     ],
                   )
                 ],

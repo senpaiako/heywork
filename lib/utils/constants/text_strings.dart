@@ -10,7 +10,7 @@ class TTexts {
       "Working is fun with your team, track your progress now.";
 
   //Login
-  static const String LoginTitle1 = "End Your Day";
+  static const String LoginTitle1 = "Start Your Day";
   static const String LogingSubTitle1 = "Be Prepared and Enjoy the Moment";
   static const String signupTitle = "Let's create your account";
   static const String forgetPasswordTitle = "Forget password";
