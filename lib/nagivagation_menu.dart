@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:payroll_vade/feature/activity/screens/home_screen/home.dart';
-import 'package:payroll_vade/feature/activity/screens/profile_screen/profile.dart';
+import 'package:payroll_vade/feature/activity/screens/profile_screen/profile_main.dart';
 import 'package:payroll_vade/feature/activity/screens/self_service_screen/self_service.dart';
 import 'package:payroll_vade/feature/authentication/screens/Login/logIn_screen.dart';
 import 'package:payroll_vade/utils/constants/colors.dart';
@@ -27,9 +27,7 @@ class NavigationMenu extends StatefulWidget {
 }
 
 class _NavigationMenuState extends State<NavigationMenu> {
-  final NavigationController controller;
-
-  _NavigationMenuState() : controller = Get.put(NavigationController());
+  late final NavigationController controller = Get.put(NavigationController());
 
   Timer? _sessionTimer;
 
@@ -153,7 +151,9 @@ class _NavigationMenuState extends State<NavigationMenu> {
           ),
         ),
       ),
-      body: Obx(() => controller.screens[controller.selectedIndex.value]),
+      body: Obx(() => controller.screens.isNotEmpty
+          ? controller.screens[controller.selectedIndex.value]
+          : const SizedBox()),
     );
   }
 }
@@ -165,8 +165,8 @@ class NavigationController extends GetxController {
   void init(LoginRequest loginRequest, AccountDto accountDTO) {
     screens = [
       HomeScreen(loginRequest: loginRequest, accountDTO: accountDTO),
-      const SelfService(),
-      const Profile(),
+      SelfService(loginRequest: loginRequest),
+      ProfileMain(loginRequest: loginRequest, accountDTO: accountDTO),
     ];
   }
 }

@@ -93,7 +93,8 @@ class _HomeScreenState extends State<HomeScreen> {
           width: TDeviceUtils.getScreenWidth(context),
           height: 170,
           child: CustomPaint(
-            painter: WavyBottomPainter(dark ? TColors.accent : TColors.primary),
+            painter:
+                WavyBottomPainter(dark ? TColors.secondary : TColors.primary),
           ),
         ),
         Padding(
