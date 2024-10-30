@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:payroll_vade/common/styles/spacing_styles.dart';
-import 'package:payroll_vade/feature/authentication/screens/Login/widget/login_header.dart';
 import 'package:payroll_vade/utils/constants/colors.dart';
 import 'package:payroll_vade/utils/constants/image.strings.dart';
 import 'package:payroll_vade/utils/constants/sizes.dart';
@@ -8,6 +7,8 @@ import 'package:payroll_vade/utils/helpers/helper_functions.dart';
 import 'package:payroll_vade/utils/request/login_request.dart';
 import 'package:payroll_vade/utils/request/change_password_request.dart';
 import 'package:payroll_vade/utils/api/change_password_api.dart';
+import 'package:payroll_vade/utils/theme/custom_themes/text_field_theme.dart';
+import 'package:payroll_vade/utils/constants/text_strings.dart';
 
 class ChangePassword extends StatefulWidget {
   final LoginRequest loginRequest;
@@ -25,11 +26,13 @@ class _ChangePasswordState extends State<ChangePassword> {
       TextEditingController();
   String? errorMessage;
   bool loading = false;
+  bool isNewPasswordVisible = false;
+  bool isRepeatPasswordVisible = false;
 
   Future<void> changePassword() async {
     setState(() {
       loading = true;
-      errorMessage = null; // Clear previous error message
+      errorMessage = null;
     });
 
     final oldPassword = currentPasswordController.text.trim();
@@ -59,20 +62,15 @@ class _ChangePasswordState extends State<ChangePassword> {
       loading = false;
     });
 
-    // Check if the response is not null and handle it accordingly
     if (response is Map<String, dynamic>) {
-      // If the response is a JSON object
       if (response['message'] == 'Success.') {
-        Navigator.pop(context); // Navigate back if successful
+        Navigator.pop(context);
       } else {
-        // Handle specific error messages from the response
         errorMessage = response['message'] ?? 'An error occurred';
       }
     } else if (response is String) {
-      // If the response is a string (like an error message)
       errorMessage = response;
     } else {
-      // Handle unexpected response types
       errorMessage = 'Unexpected response format';
     }
   }
@@ -103,32 +101,113 @@ class _ChangePasswordState extends State<ChangePassword> {
                 padding: const EdgeInsets.symmetric(
                     vertical: TSizes.spaceBtwSections),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Text(
+                      "Change Password",
+                      style: Theme.of(context).textTheme.headlineMedium,
+                    ),
+                    SizedBox(
+                      height: TSizes.spaceBtwItems,
+                    ),
                     TextFormField(
                       controller: currentPasswordController,
                       obscureText: true,
-                      decoration: InputDecoration(
-                        labelText: 'Current Password',
-                        prefixIcon: Icon(Icons.lock),
-                      ),
+                      decoration: dark
+                          ? TTextFormFieldTheme.darkInputDecorationTheme
+                              .copyWith(
+                              prefixIcon: const Icon(Icons.lock),
+                              labelText: 'Current Password',
+                            )
+                          : TTextFormFieldTheme.lightInputDecorationTheme
+                              .copyWith(
+                              prefixIcon: const Icon(Icons.lock),
+                              labelText: 'Current Password',
+                            ),
                     ),
                     const SizedBox(height: TSizes.sm),
                     TextFormField(
                       controller: newPasswordController,
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        labelText: 'New Password',
-                        prefixIcon: Icon(Icons.lock),
-                      ),
+                      obscureText: !isNewPasswordVisible,
+                      decoration: dark
+                          ? TTextFormFieldTheme.darkInputDecorationTheme
+                              .copyWith(
+                              prefixIcon: const Icon(Icons.lock),
+                              labelText: 'New Password',
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  isNewPasswordVisible
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    isNewPasswordVisible =
+                                        !isNewPasswordVisible;
+                                  });
+                                },
+                              ),
+                            )
+                          : TTextFormFieldTheme.lightInputDecorationTheme
+                              .copyWith(
+                              prefixIcon: const Icon(Icons.lock),
+                              labelText: 'New Password',
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  isNewPasswordVisible
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    isNewPasswordVisible =
+                                        !isNewPasswordVisible;
+                                  });
+                                },
+                              ),
+                            ),
                     ),
                     const SizedBox(height: TSizes.sm),
                     TextFormField(
                       controller: repeatNewPasswordController,
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        labelText: 'Repeat New Password',
-                        prefixIcon: Icon(Icons.lock),
-                      ),
+                      obscureText: !isRepeatPasswordVisible,
+                      decoration: dark
+                          ? TTextFormFieldTheme.darkInputDecorationTheme
+                              .copyWith(
+                              prefixIcon: const Icon(Icons.lock),
+                              labelText: 'Repeat New Password',
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  isRepeatPasswordVisible
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    isRepeatPasswordVisible =
+                                        !isRepeatPasswordVisible;
+                                  });
+                                },
+                              ),
+                            )
+                          : TTextFormFieldTheme.lightInputDecorationTheme
+                              .copyWith(
+                              prefixIcon: const Icon(Icons.lock),
+                              labelText: 'Repeat New Password',
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  isRepeatPasswordVisible
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    isRepeatPasswordVisible =
+                                        !isRepeatPasswordVisible;
+                                  });
+                                },
+                              ),
+                            ),
                     ),
                     const SizedBox(height: TSizes.sm),
                     SizedBox(

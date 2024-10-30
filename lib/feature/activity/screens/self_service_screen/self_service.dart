@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:payroll_vade/feature/activity/screens/self_service_screen/action/action_form.dart';
 import 'package:payroll_vade/utils/api/get_leave_api.dart';
 import 'package:payroll_vade/utils/constants/colors.dart';
 import 'package:payroll_vade/utils/dto/leave/employee_leave.dto.dart';
@@ -25,6 +26,13 @@ class _SelfServiceState extends State<SelfService> {
     _loadEvents();
   }
 
+  void _showFormDialog(String title) {
+    showDialog(
+      context: context,
+      builder: (context) => QuickActionFormDialog(title: title),
+    );
+  }
+
   Future<void> _loadEvents() async {
     const leaveColor = Colors.blue;
     String leaveType = "WHOLEDAY";
@@ -33,25 +41,20 @@ class _SelfServiceState extends State<SelfService> {
         await GetLeaveApi().getLeave(loginRequest: widget.loginRequest);
 
     if (response != null) {
-      // Assuming response is of type EmployeeLeaveDto
       final EmployeeLeaveDto leaveData = response;
 
-      // Populate the events map with leave data
       for (var leave in leaveData.leaves) {
-        // Parse startDate and endDate as DateTime
         DateTime startDate = DateTime.parse(leave.startDate);
         DateTime endDate = DateTime.parse(leave.endDate);
 
-        // Iterate through the date range to add events for each day
         for (var day = startDate;
             day.isBefore(endDate) || day.isAtSameMomentAs(endDate);
             day = day.add(Duration(days: 1))) {
           _events.putIfAbsent(day, () => []).add({
             'type': leave.leaveType,
             'remarks': leave.remarks ?? 'No remarks',
-            'color': leave.leaveType != leaveType
-                ? leaveColor
-                : TColors.secondary, // Use ternary operator here
+            'color':
+                leave.leaveType != leaveType ? leaveColor : TColors.secondary,
           });
         }
       }
@@ -70,6 +73,7 @@ class _SelfServiceState extends State<SelfService> {
     });
   }
 
+  //dialog box when clicking
   void _showEventDetails(BuildContext context, Map<String, dynamic> event) {
     showDialog(
       context: context,
@@ -85,6 +89,87 @@ class _SelfServiceState extends State<SelfService> {
           ],
         );
       },
+    );
+  }
+
+  void _showOptionsModal() {
+    showModalBottomSheet(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      backgroundColor: Colors.white,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                "Quick Actions",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Divider(color: Colors.grey[300], thickness: 1),
+              const SizedBox(height: 10),
+              _buildOptionRow(),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildOptionRow() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        _buildOptionItem("DTR Logs", Icons.access_time),
+        _buildOptionItem("Leave", Icons.beach_access),
+        _buildOptionItem("Adjustment", Icons.tune),
+        _buildOptionItem("Overtime", Icons.timer),
+        _buildOptionItem("Payroll", Icons.payments),
+      ],
+    );
+  }
+
+  Widget _buildOptionItem(String title, IconData icon) {
+    return GestureDetector(
+      onTap: () => _showFormDialog(title),
+      child: Column(
+        children: [
+          Container(
+            height: 60,
+            width: 60,
+            decoration: BoxDecoration(
+              color: Colors.blueAccent,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black12,
+                  blurRadius: 8,
+                  offset: Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Icon(icon, color: Colors.white, size: 30),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.black87,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
     );
   }
 
@@ -160,6 +245,10 @@ class _SelfServiceState extends State<SelfService> {
             ),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _showOptionsModal,
+        child: const Icon(Icons.menu),
       ),
     );
   }

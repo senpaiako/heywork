@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:payroll_vade/common/styles/spacing_styles.dart';
 import 'package:payroll_vade/feature/activity/screens/home_screen/widget/background.dart';
 import 'package:payroll_vade/feature/activity/screens/home_screen/widget/container.dart';
@@ -127,14 +128,13 @@ class _ProfileMainState extends State<ProfileMain> {
                       padding: EdgeInsets.zero,
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      itemCount: 5,
+                      itemCount: 4,
                       itemBuilder: (context, index) {
                         final labels = [
                           'Profile',
                           'Organization Chart',
                           'Government',
                           'Change Password',
-                          'Logout'
                         ];
                         return _buildNavigationItem(labels[index]);
                       },
@@ -143,6 +143,21 @@ class _ProfileMainState extends State<ProfileMain> {
                         thickness: 1,
                       ),
                     ),
+                  ),
+                ),
+                const SizedBox(
+                  height: TSizes.spaceBtwItems,
+                ),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    style: const ButtonStyle(
+                        backgroundColor: WidgetStatePropertyAll(TColors.error)),
+                    onPressed: () {
+                      _navigateTo("Logout");
+                    },
+                    icon: const Icon(Iconsax.logout),
+                    label: const Text("Log Out"),
                   ),
                 ),
               ],
